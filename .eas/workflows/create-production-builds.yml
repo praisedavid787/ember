@@ -1,11 +1,12 @@
 name: Create Production Builds
 
-# Run automatically whenever main is pushed (requires the repo to be connected
-# to the EAS project on expo.dev — Expo GitHub App installed + repo linked).
+# Run on version tag pushes only (e.g. v1.0.0), not on every commit — keeps
+# builds intentional. Requires the repo to be connected to the EAS project on
+# expo.dev (Expo GitHub App installed + repo linked).
 on:
   push:
-    branches:
-      - main
+    tags:
+      - v*
 
 jobs:
   build_android:
