@@ -21,6 +21,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "130bb23a-1efd-4093-a941-c25cab1b1dfa"
+      }
+    },
+    "owner": "praisedave"
   }
 }
