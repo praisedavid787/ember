@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Ember",
-    "slug": "ember",
+    "slug": "dating-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
