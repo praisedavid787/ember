@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -45,6 +45,16 @@ export const SwipeCard = forwardRef<SwipeCardHandle, Props>(function SwipeCard(
   const { width } = useWindowDimensions();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+
+  // Story-style photo paging. Tapping the left/right half of the card (or a
+  // screen-reader adjust action) moves through the gallery; clamped at the ends.
+  const photoCount = profile.photos.length;
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const goNextPhoto = useCallback(
+    () => setPhotoIndex(i => Math.min(i + 1, photoCount - 1)),
+    [photoCount],
+  );
+  const goPrevPhoto = useCallback(() => setPhotoIndex(i => Math.max(i - 1, 0)), []);
   // Springs toward `stackIndex`; when the top card leaves, the card behind it
   // animates forward instead of snapping.
   const stack = useSharedValue(stackIndex);
@@ -87,6 +97,24 @@ export const SwipeCard = forwardRef<SwipeCardHandle, Props>(function SwipeCard(
       }
     });
 
+  // Tap the left or right half to page photos. The card spans the deck width
+  // minus the screen's horizontal padding, so the midpoint is computed from it.
+  const cardWidth = width - spacing.lg * 2;
+  const tap = Gesture.Tap()
+    .enabled(active && photoCount > 1)
+    .maxDuration(250)
+    .onEnd((event, success) => {
+      if (!success) return;
+      if (event.x < cardWidth / 2) {
+        runOnJS(goPrevPhoto)();
+      } else {
+        runOnJS(goNextPhoto)();
+      }
+    });
+
+  // Pan wins on movement; a stationary tap falls through to photo paging.
+  const gesture = Gesture.Race(pan, tap);
+
   const cardStyle = useAnimatedStyle(() => {
     const rotate = interpolate(
       translateX.value,
@@ -116,13 +144,31 @@ export const SwipeCard = forwardRef<SwipeCardHandle, Props>(function SwipeCard(
   }));
 
   return (
-    <GestureDetector gesture={pan}>
+    <GestureDetector gesture={gesture}>
       <Animated.View
         style={[styles.container, { zIndex: 100 - stackIndex }, cardStyle]}
         pointerEvents={active ? 'auto' : 'none'}
+        accessible={active}
+        accessibilityRole="adjustable"
+        accessibilityLabel={`${profile.name}, ${profile.age}. Photo ${photoIndex + 1} of ${photoCount}`}
+        accessibilityActions={
+          photoCount > 1
+            ? [
+                { name: 'increment', label: 'Next photo' },
+                { name: 'decrement', label: 'Previous photo' },
+              ]
+            : undefined
+        }
+        onAccessibilityAction={event => {
+          if (event.nativeEvent.actionName === 'increment') {
+            goNextPhoto();
+          } else if (event.nativeEvent.actionName === 'decrement') {
+            goPrevPhoto();
+          }
+        }}
       >
         <View style={styles.cardArea}>
-          <ProfileCard profile={profile} />
+          <ProfileCard profile={profile} activePhotoIndex={photoIndex} />
 
           {active && (
             <>

@@ -8,12 +8,29 @@ type Props = {
   // Compact mode renders without the gradient overlay — used in the
   // Match screen where the card is presented in a calmer layout.
   compact?: boolean;
+  // Which photo in the gallery to show. The Swipe card drives this as you tap
+  // through; defaults to the cover for static placements (e.g. Match screen).
+  activePhotoIndex?: number;
 };
 
-export function ProfileCard({ profile, compact = false }: Props) {
+export function ProfileCard({ profile, compact = false, activePhotoIndex = 0 }: Props) {
+  const { photos } = profile;
+  const index = Math.min(Math.max(activePhotoIndex, 0), photos.length - 1);
+
   return (
     <View style={[styles.card, compact && styles.cardCompact]}>
-      <Image source={{ uri: profile.imageUrl }} style={styles.image} resizeMode="cover" />
+      <Image source={{ uri: photos[index] }} style={styles.image} resizeMode="cover" />
+
+      {photos.length > 1 && (
+        <View style={styles.indicators} pointerEvents="none">
+          {photos.map((photo, i) => (
+            <View
+              key={photo}
+              style={[styles.indicatorTrack, i === index && styles.indicatorActive]}
+            />
+          ))}
+        </View>
+      )}
 
       <View style={[styles.meta, compact && styles.metaCompact]}>
         <View style={styles.headerRow}>
@@ -60,6 +77,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+  },
+  // Story-style segmented progress bar pinned to the top of the card.
+  indicators: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    right: spacing.sm,
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  indicatorTrack: {
+    flex: 1,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+  },
+  indicatorActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
   meta: {
     position: 'absolute',

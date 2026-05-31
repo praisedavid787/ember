@@ -4,5 +4,7 @@ export type Profile = {
   age: number;
   bio: string;
   interests: string[];
-  imageUrl: string;
+  // Ordered photo gallery (image/GIF URLs). photos[0] is the cover. The Swipe
+  // card lets you tap left/right to move through these, story-style.
+  photos: string[];
 };

@@ -35,6 +35,10 @@ management — without over-engineering a three-screen app.
   - Fading **LIKE** / **NOPE** overlays that track drag distance.
   - Commit on a distance threshold *or* a fast flick (velocity); springs back to
     center otherwise.
+- **Story-style photo gallery** — each profile has a multi-photo gallery.
+  Tap the left/right half of the card to page through it, with segmented
+  progress indicators across the top (à la Instagram/WhatsApp stories). Photo
+  paging is also exposed to screen readers via accessibility adjust actions.
 - **Accessible by design** — Pass / Like buttons drive the *same* fly-out
   animation as the gesture, so the app is fully usable without swiping. All
   interactive elements have accessibility roles and labels.
@@ -153,7 +157,12 @@ app-bundle), suitable for direct install on a device.
 ## Assumptions Made
 
 - **Mock data only.** Profiles are local JavaScript (`src/data/profiles.ts`)
-  using public Unsplash placeholder images. There is no backend or API.
+  using public Unsplash placeholder images. There is no backend or API. The
+  per-profile galleries reuse a small pool of stock images, so lifestyle shots
+  repeat across profiles.
+- **Gallery media is images/GIFs.** The card gallery is modelled as an array of
+  image URLs (`Image` renders GIFs too). Short video was intentionally left out
+  to keep the APK lean; it's a clean extension via `expo-video` (see below).
 - **No authentication.** The app opens straight into the experience; the
   Welcome CTA is the only gate.
 - **A like always "matches."** For demo purposes every right swipe routes to the
@@ -171,6 +180,8 @@ app-bundle), suitable for direct install on a device.
 - No real chat — the Match screen's "Send a message" is a placeholder.
 - No networking, loading, or image-error states beyond the deck's empty state.
 - The deck is finite (the mock set); "Start over" replays the same profiles.
+- Gallery supports images/GIFs only — no inline video playback yet (would be
+  added with `expo-video`, gating autoplay to the active card).
 
 ---
 
