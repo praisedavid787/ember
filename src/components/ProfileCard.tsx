@@ -17,20 +17,20 @@ export function ProfileCard({ profile, compact = false }: Props) {
 
       <View style={[styles.meta, compact && styles.metaCompact]}>
         <View style={styles.headerRow}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={[styles.name, compact && styles.nameCompact]} numberOfLines={1}>
             {profile.name}
-            <Text style={styles.age}>, {profile.age}</Text>
+            <Text style={[styles.age, compact && styles.nameCompact]}>, {profile.age}</Text>
           </Text>
         </View>
 
-        <Text style={styles.bio} numberOfLines={compact ? 0 : 2}>
+        <Text style={[styles.bio, compact && styles.bioCompact]} numberOfLines={compact ? 0 : 2}>
           {profile.bio}
         </Text>
 
         <View style={styles.interestRow}>
           {profile.interests.map(interest => (
-            <View key={interest} style={styles.chip}>
-              <Text style={styles.chipText}>{interest}</Text>
+            <View key={interest} style={[styles.chip, compact && styles.chipCompact]}>
+              <Text style={[styles.chipText, compact && styles.chipTextCompact]}>{interest}</Text>
             </View>
           ))}
         </View>
@@ -72,6 +72,21 @@ const styles = StyleSheet.create({
   metaCompact: {
     position: 'relative',
     backgroundColor: colors.surface,
+  },
+  // Compact mode sits on a light surface (Match screen), so the overlay's
+  // white text/chips would be invisible — flip them to dark-on-light.
+  nameCompact: {
+    color: colors.textPrimary,
+  },
+  bioCompact: {
+    color: colors.textSecondary,
+    opacity: 1,
+  },
+  chipCompact: {
+    backgroundColor: 'rgba(10, 10, 10, 0.06)',
+  },
+  chipTextCompact: {
+    color: colors.textSecondary,
   },
   headerRow: {
     flexDirection: 'row',
