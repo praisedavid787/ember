@@ -1,6 +1,7 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Image } from 'expo-image';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -55,6 +56,14 @@ export const SwipeCard = forwardRef<SwipeCardHandle, Props>(function SwipeCard(
     [photoCount],
   );
   const goPrevPhoto = useCallback(() => setPhotoIndex(i => Math.max(i - 1, 0)), []);
+
+  // Warm the next photo while the current one is on screen so tapping forward
+  // shows it instantly instead of flashing the loading skeleton.
+  useEffect(() => {
+    if (!active) return;
+    const next = profile.photos[photoIndex + 1];
+    if (next) Image.prefetch(next);
+  }, [active, photoIndex, profile.photos]);
   // Springs toward `stackIndex`; when the top card leaves, the card behind it
   // animates forward instead of snapping.
   const stack = useSharedValue(stackIndex);

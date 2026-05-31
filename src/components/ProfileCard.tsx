@@ -1,4 +1,6 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 
 import { colors, radii, spacing, typography } from '../theme/colors';
 import type { Profile } from '../types/profile';
@@ -16,10 +18,31 @@ type Props = {
 export function ProfileCard({ profile, compact = false, activePhotoIndex = 0 }: Props) {
   const { photos } = profile;
   const index = Math.min(Math.max(activePhotoIndex, 0), photos.length - 1);
+  const uri = photos[index];
+
+  // Reset the error fallback whenever the shown photo changes.
+  const [errored, setErrored] = useState(false);
+  useEffect(() => setErrored(false), [uri]);
 
   return (
     <View style={[styles.card, compact && styles.cardCompact]}>
-      <Image source={{ uri: photos[index] }} style={styles.image} resizeMode="cover" />
+      <Image
+        source={uri}
+        style={styles.image}
+        contentFit="cover"
+        transition={250}
+        cachePolicy="memory-disk"
+        // Reuse the native view per profile so paging photos doesn't thrash it.
+        recyclingKey={profile.id}
+        onError={() => setErrored(true)}
+        onLoad={() => setErrored(false)}
+      />
+
+      {errored && (
+        <View style={styles.fallback}>
+          <Text style={styles.fallbackText}>{profile.name.charAt(0)}</Text>
+        </View>
+      )}
 
       {photos.length > 1 && (
         <View style={styles.indicators} pointerEvents="none">
@@ -77,6 +100,23 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+    // Neutral skeleton shown while the photo loads, before the fade-in.
+    backgroundColor: colors.border,
+  },
+  fallback: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+  },
+  fallbackText: {
+    ...typography.display,
+    fontSize: 64,
+    color: colors.textMuted,
   },
   // Story-style segmented progress bar pinned to the top of the card.
   indicators: {
