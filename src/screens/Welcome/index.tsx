@@ -34,7 +34,7 @@ export function WelcomeScreen() {
         </Pressable>
 
         <Text style={styles.footnote}>
-          By continuing you agree to the assessment terms.
+          By continuing you agree to our Terms & Privacy Policy.
         </Text>
       </View>
     </SafeAreaView>
