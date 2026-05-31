@@ -1,7 +1,15 @@
 name: Create Production Builds
 
+# Run automatically whenever main is pushed (requires the repo to be connected
+# to the EAS project on expo.dev — Expo GitHub App installed + repo linked).
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   build_android:
-    type: build # This job type creates a production build for Android
+    type: build # Builds an installable Android APK (preview profile = apk)
     params:
       platform: android
+      profile: preview
