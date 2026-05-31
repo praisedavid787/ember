@@ -190,7 +190,7 @@ app-bundle), suitable for direct install on a device.
 
 ## Repository
 
-- **Repository link:** _TODO — paste the GitHub repository URL here._
+- **Repository link:** https://github.com/praisedavid787/ember
 
 No additional configuration is required to run the project beyond the
 [Setup & Installation](#setup--installation) steps above.
