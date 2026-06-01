@@ -187,7 +187,7 @@ app-bundle), suitable for direct install on a device.
 
 ## APK Download
 
-- **Google Drive link:** _TODO — paste the shared Drive link to the APK here._
+- **Google Drive link:** https://drive.google.com/file/d/1GIxTkI8qzHtAfEgRDeWRo_GFiupw6Mbu/view?usp=drive_link
 
 **Install instructions (Android):**
 
